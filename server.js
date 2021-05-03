@@ -1,7 +1,18 @@
 const express = require("express");
+
+//whenever we use require() to import data or functionality, it's only reading the data and creating a copy of it to use in server.js
 const { animals } = require("./data/animals");
+
+//import and use the fs library to write that data to animals.json.
+const fs = require("fs");
+const path = require("path");
+
 const PORT = process.env.PORT || 3001;
 const app = express();
+//parse incoming string or array data
+app.use(express.urlencoded({ extended: true }));
+//parse incoming JSON data
+app.use(express.json());
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -17,13 +28,7 @@ function filterByQuery(query, animalsArray) {
     }
     //loop through each trait in the personalityTraits array:
     personalityTraitsArray.forEach((trait) => {
-      // Check the trait against each animal in the filteredResults array.
-      // Remember, it is initially a copy of the animalsArray,
-      // but here we're updating it for each trait in the .forEach() loop.
-      // For each trait being targeted by the filter, the filteredResults
-      // array will then contain only the entries that contain the trait,
-      // so at the end we'll have an array of animals that have every one
-      // of the traits when the .forEach() loop is finished.
+      // Check the trait against each animal in the filteredResults array. Remember, it is initially a copy of the animalsArray, but here we're updating it for each trait in the .forEach() loop. For each trait being targeted by the filter, the filteredResults array will then contain only the entries that contain the trait, so at the end we'll have an array of animals that have every one of the traits when the .forEach() loop is finished.
 
       filteredResults = filteredResults.filter(
         (animal) => animal.personalityTraits.indexOf(trait) !== -1
@@ -52,6 +57,40 @@ function findById(id, animalsArray) {
   const result = animalsArray.filter((animal) => animal.id === id)[0];
   return result;
 }
+
+function createNewAnimal(body, animalsArray) {
+  const animal = body;
+  animalsArray.push(animal);
+
+  //we added require fs on top of the file
+  fs.writeFileSync(
+    path.join(__dirname, "./data/animals.json"),
+
+    //  two arguments used in the method, null and 2, are means of keeping our data formatted. The null argument means we don't want to edit any of our existing data; if we did, we could pass something in there. The 2 indicates we want to create white space between our values to make it more readable. If we were to leave those two arguments out, the entire animals.json file would work, but it would be really hard to read.
+
+    JSON.stringify({ animals: animalsArray }, null, 2)
+  );
+
+  //return finished code to post route for response
+  return animal;
+}
+
+function validadeAnimal(animal) {
+  if (!animal.name || typeof animal.name !== "string") {
+    return false;
+  }
+  if (!animal.species || typeof animal.species !== "string") {
+    return false;
+  }
+  if (!animal.diet || typeof animal.diet !== "string") {
+    return false;
+  }
+  if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false;
+  }
+  return true;
+}
+
 app.get("/api/animals", (req, res) => {
   let results = animals;
   if (req.query) {
@@ -66,6 +105,21 @@ app.get("/api/animals/:id", (req, res) => {
     res.json(result);
   } else {
     res.send(404);
+  }
+});
+
+app.post("/api/animals", (req, res) => {
+  //set id based on what the next index of the array will be
+  req.body.id = animals.length.toString();
+
+  //if any data in req.body is incorrect, send 400 error back
+  if (!validadeAnimal(req.body)) {
+    res.status(400).send("The animal is not properly formatted.");
+  } else {
+    //add animal to json file and animals array in this function
+
+    const animal = createNewAnimal(req.body, animals);
+    res.json(animal);
   }
 });
 
