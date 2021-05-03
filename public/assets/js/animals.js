@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 const $animalForm = document.querySelector("#animals-form");
 const $displayArea = document.querySelector("#display-area");
 
@@ -40,7 +38,6 @@ const getAnimals = (formData = {}) => {
 
   console.log(queryUrl);
 
-  //standard fetch() usage for making a GET request
   fetch(queryUrl)
     .then((response) => {
       if (!response.ok) {

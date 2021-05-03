@@ -136,6 +136,15 @@
         "loving"
       ],
       "id": "13"
+    },
+    {
+      "name": "Moo",
+      "species": "Cow",
+      "diet": "herbivore",
+      "personalityTraits": [
+        "loving"
+      ],
+      "id": "14"
     }
   ]
 }
