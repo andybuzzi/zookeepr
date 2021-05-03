@@ -117,6 +117,25 @@
         "hungry"
       ],
       "id": "11"
+    },
+    {
+      "name": "Sky",
+      "species": "Schnauzer",
+      "diet": "carnivore",
+      "personalityTraits": [
+        "loving",
+        "goofy"
+      ],
+      "id": "12"
+    },
+    {
+      "name": "Sky Blue",
+      "species": "Schnauzer",
+      "diet": "carnivore",
+      "personalityTraits": [
+        "loving"
+      ],
+      "id": "13"
     }
   ]
 }
